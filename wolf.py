@@ -3,16 +3,14 @@
 import enum
 import sys
 import settings
-from datetime import date
+import logging
+from datetime import date, timedelta
 
 from flask import (Flask,
                    flash,
-                   jsonify,
-                   Markup,
                    redirect,
                    render_template,
                    request,
-                   session,
                    url_for,
                   )
 from flask_sqlalchemy import SQLAlchemy
