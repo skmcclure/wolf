@@ -8,18 +8,19 @@ import logging
 
 from datetime import date, timedelta
 
-from flask import (Flask,
-                   flash,
-                   redirect,
-                   render_template,
-                   request,
-                   url_for,
-                  )
+from flask import (
+        Flask,
+        flash,
+        redirect,
+        render_template,
+        url_for,
+    )
 from flask_sqlalchemy import SQLAlchemy
 
 SQLALCHEMY_DATABASE_URI = settings.SQLALCHEMY_DATABASE_URI
 DEBUG = settings.DEBUG
 SECRET_KEY = settings.SECRET_KEY
+
 
 def configure_app_logging():
     logger = logging.getLogger('Wolf')
@@ -34,6 +35,7 @@ def configure_app_logging():
 
     return logger
 
+
 app = Flask(__name__)
 
 # set a session time so that users have to login again or that the data we've stored in the
@@ -45,13 +47,13 @@ if settings.SESSION_TIMEOUT:
 app.config.from_object(__name__)
 
 
-
 # set up SQL Alchemy for database access
 db = SQLAlchemy(app)
 
 # this will look for config items in this file and set them in the app factory object
 app.config.from_object(__name__)
 app.secret_key = 'secret'
+
 
 class PartnerType(enum.Enum):
     BLIND = 'Blind'
@@ -61,7 +63,7 @@ class PartnerType(enum.Enum):
 
 
 class Game(db.Model):
-    pkey = db.Column(db.Integer, primary_key = True)
+    pkey = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     course = db.Column(db.Text)
     num_holes = db.Column(db.Integer)
@@ -78,8 +80,9 @@ class Game(db.Model):
         self.carry_overs = carry_overs
         self.players = players
 
+
 class Hole(db.Model):
-    pkey = db.Column(db.Integer, primary_key = True)
+    pkey = db.Column(db.Integer, primary_key=True)
     game_fkey = db.Column(db.Integer, db.ForeignKey('game.pkey'))
     num = db.Column(db.Integer)
     wolf = db.Column(db.String)
@@ -95,7 +98,7 @@ class Hole(db.Model):
         self.mode = mode
         self.partner = partner
         self.scores = scores
-        self.set_carryover(game)
+        self.set_carryover(carry_over)
 
     def get_winners(self, game=None):
         winners = list()
@@ -108,14 +111,11 @@ class Hole(db.Model):
         for person, score in zip(player_list, eval(self.scores)):
             score = int(score)
             if score == lowest:
-                #outstr += person+'\n'
                 winners.append(person)
             elif score < lowest:
-                #outstr += 'starting over\n'
                 del winners
                 winners = list()
                 winners.append(person)
-                #outstr += person+'\n'
                 lowest = score
 
         outcome = 'tie'
@@ -135,9 +135,9 @@ class Hole(db.Model):
             # either the wolf or partner has to be a winner
             # and they can be only winners
             before_count = len(winners)
-            if (self.wolf in winners):
+            if self.wolf in winners:
                 winners.remove(self.wolf)
-            if (self.partner in winners):
+            if self.partner in winners:
                 winners.remove(self.partner)
             # one of the other players is in the winners list
             if len(winners) > 0:
@@ -179,7 +179,6 @@ class Hole(db.Model):
 
     def set_carryover(self, game):
         self.carry_over = 0
-        points = self.get_points()
         winners = self.get_winners(game)
         lasthole = self.get_lasthole()
         if lasthole:
@@ -194,37 +193,40 @@ class Hole(db.Model):
 
     def get_lasthole(self):
         if self.num > 1:
-            lasthole = Hole.query.filter_by(game_fkey=game.pkey, num=self.num - 1).first()
+            lasthole = Hole.query.filter_by(game_fkey=self.game_fkey, num=self.num - 1).first()
         else:
             lasthole = None
         return lasthole
+
 
 @app.route('/', methods=['GET'])
 def games():
     game_list = Game.query.order_by(Game.date.desc()).all()
     return render_template('index.html', games=game_list)
 
-@app.route('/new_game', methods=['GET','POST'])
+
+@app.route('/new_game', methods=['GET', 'POST'])
 def new_game():
     if request.method == 'GET':
         today = date.today()
         return render_template('new_game.html', today=today)
     else:
         y, m, d = map(int, request.form.get('date').split('-'))
-        game = Game(date(y, m, d),
-                    request.form.get('course'),
-                    int(request.form.get('holes')),
-                    int(request.form.get('start')),
-                    request.form.get('players'),
+        game = Game(
+                date(y, m, d),
+                request.form.get('course'),
+                int(request.form.get('holes')),
+                int(request.form.get('start')),
+                request.form.get('players'),
                    )
         db.session.add(game)
         db.session.commit()
         # get values from the form and create a new game
-        flash ('Successfully created a new game')
+        flash('Successfully created a new game')
         return redirect(url_for('games'))
 
-#@app.route('/hole/<int:holenum>', methods=['GET'])
-@app.route('/game/<int:gamenum>/<int:holenum>', methods=['GET','POST'])
+
+@app.route('/game/<int:gamenum>/<int:holenum>', methods=['GET', 'POST'])
 def score(gamenum, holenum):
     game = Game.query.filter_by(pkey=gamenum).first()
     hole = Hole.query.filter_by(game_fkey=gamenum, num=holenum).first()
@@ -232,7 +234,7 @@ def score(gamenum, holenum):
         # FIXME - the hole needs to be calculated for rollover because the round
         # FIXME - might not have started on 1 or 10.
         last_hole = hole.get_lasthole()
-        if
+        if not last_hole:
             last_hole = Hole.query.filter_by(game_fkey=gamenum, num=holenum-1).first()
             carry_over = last_hole.carry_over
         else:
@@ -278,7 +280,7 @@ def score(gamenum, holenum):
                 partner = None
 
             scores = request.form.getlist('score')
-            print (scores)
+            print(scores)
             if len(scores) < 4:
                 flash('You must enter all player scores', 'error')
                 return render_template('enter_score.html', game = game,
