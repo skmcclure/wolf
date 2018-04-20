@@ -283,14 +283,16 @@ def score(gamenum, holenum):
             print(scores)
             if len(scores) < 4:
                 flash('You must enter all player scores', 'error')
-                return render_template('enter_score.html', game = game,
-                                       wolf = wolf,
-                                       partner = None,
-                                       players = players,
-                                       scores = [],
-                                       points = [],
-                                       gamenum = gamenum,
-                                       holenum = holenum)
+                return render_template('enter_score.html',
+                                       game=game,
+                                       wolf=wolf,
+                                       partner=None,
+                                       players=players,
+                                       scores=[],
+                                       points=[],
+                                       gamenum=gamenum,
+                                       holenum=holenum,
+                                      )
             hole = Hole(game,
                         holenum,
                         wolf,
