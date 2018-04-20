@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Bootstrap Javascript requirements -->
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <!-- bootstrap CSS requirements -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Font Awesome -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/solid.js" integrity="sha384-+Ga2s7YBbhOD6nie0DzrZpJes+b2K1xkpKxTFFcx59QmVPaSA8c7pycsNaFwUK6l" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/fontawesome.js" integrity="sha384-7ox8Q2yzO/uWircfojVuCQOZl+ZZBg2D2J5nkpLqzH1HY0C1dHlTKIbpRz/LG23c" crossorigin="anonymous"></script>
+
+    <!-- Enable Bootstrap tooltips via JQuery -->
+    <script>
+    $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip({
+            animation: true,
+            delay: {show: 750, hide: 100}
+        });
+    });
+    </script>
+
+    {% block head %}
+    <!-- put stylesheet stuff here -->
+    <title>
+        Wolf - {% block title %}
+        {% endblock %}
+    </title>
+
+    {% block css %}
+    {# increment the version number every time you change a style or you wont see the changes
+       because the browser will cache it on you. AFAICT, the Jinja2 templates doesn't let you
+       call out to other code or run any old python so an automatic timestamp can't be put in
+       here.#}
+
+    {% set version = "2" %}
+    <link rel="stylesheet"
+          type="text/css"
+          href="{{ url_for('static', filename='site_global.css') }}?{{ version }}">
+    </link>
+    <link rel="stylesheet"
+          type="text/css"
+          href="{{ url_for('static', filename='index.css') }}?{{ version }}">
+    </link>
+    {% endblock %}
+
+    <style>
+    td { padding: 3px; }
+    </style>
+    {% endblock %}
+    <link rel="shortcut icon" href="{{ url_for('static', filename='wolf-icon-png-2853.png') }}" />
+
+    <script type="text/javascript">// <![CDATA[
+        function busy() {
+            document.getElementById("busy").style.display = "block";
+            document.getElementById("busy_content").style.display = "none";
+        }
+// ]]></script>
+
+    <!-- busy dialog -->
+    <script src="{{ url_for('static', filename='busy.js') }}"></script>
+
+</head>
+
+<body>
+<table id="iconbar">
+    <tr>
+        <td align="right">
+    {% if session.get('username', '') %}
+            {{ session.get('username') }}
+            <a href="{{ url_for('logout') }}">
+            <button type="button" class="btn btn-default">
+            <span class="fas fa-sign-out">
+            </span>
+            Logout
+            </button>
+            </a>
+    {% endif %}
+        </td>
+</tr>
+</table>
+
+<div id="colorbar"><!-- simple frame --></div>
+
+<div class="verticalspacer"></div>
+
+<div class="container-fluid">
+
+<div id="content">
+
+<p>
+
+{% block flashed_messages %}
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            {% if category == 'message' %}
+            <div role="alert" class="alert alert-dimissable fade show alert-info">
+            {% elif category == 'error' %}
+            <div role="alert" class="alert alert-dimissable fade show alert-danger">
+            {% else %}
+            <div role="alert" class="alert alert-dimissable fade show alert-{{ category }}" >
+            {% endif %}
+                <button type="button"
+                        data-dismiss="alert"
+                        class="close">
+                    <i class="fas fa-close"></i>
+                </button>
+                <div class="alert-message">
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+{% endblock %}
+
+{% block content %}
+{% endblock %}
+</div>
+</div>
+
+<p>
+<div class="navbar navbar-default navbar-fixed-bottom">
+    <div class="nabvar-header">
+    {% block footer %}
+    {% endblock %}
+    </div>
+</div>
+
+</body>
+
+</html>

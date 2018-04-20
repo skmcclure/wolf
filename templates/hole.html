@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}Hole {{ holenum }}{% endblock %}
+
+{% block content %}
+
+<div class="card">
+    <div class="card-header">
+        Hole #{{ holenum }} - {{ game.course }} - {{ game.date }}
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-xs-4 col-sm-2">
+            </div>
+            <div class="col-xs-1 col-sm-1">
+                <U>Score</U>
+            </div>
+            <div class="col-xs-1 col-sm-1">
+                <U>Points</U>
+            </div>
+        </div>
+
+        {% for num in range(holenum, holenum+players|count) %}
+        <div class="row">
+            <div class="col-xs-4 col-sm-2">
+                {% if players[loop.index0] == wolf %}
+                <div class="badge badge-primary">
+                <img height="24" src="{{ url_for('static', filename='wolf-24.png') }}">
+                {% elif players[loop.index0] == partner %}
+                <div class="badge badge-primary">
+                {% else %}
+                <div class="badge badge-secondary">
+                {% endif %}
+                {{ players[loop.index0] }}
+                </div>
+            </div>
+            <div class="col-xs-1 col-sm-1">
+                {{ scores[loop.index0] }}
+            </div>
+            <div class="col-xs-1 col-sm-1">
+                {{ points[loop.index0] }}
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if carry_over %}
+        <div class="row">
+            <div class="col-xs-4 col-sm-2">
+                Carry Over:
+            </div>
+            <div class="col-xs-1 col-sm-1">
+            </div>
+            <div class="col-xs-4 col-sm-2">
+                {{ carry_over }}
+            </div>
+        </div>
+        {% endif %}
+
+    <div class="card-footer">
+        {% if (holenum - 1) > 0 %}
+        <a href="{{ url_for('score', gamenum=gamenum, holenum=(holenum-1)) }}">
+        {% endif %}
+        <button type="button"
+            {% if (holenum - 1) == 0 %}
+                disabled
+            {% endif %}
+                class="btn btn-primary">
+            <span class="fas fa-minus">
+            </span>
+        </button>
+        {% if (holenum - 1) > 0 %}
+        </a>
+        {% endif %}
+
+        {% if holenum < 18 %}
+        <a href="{{ url_for('score', gamenum=gamenum, holenum=holenum+1) }}">
+        {% endif %}
+        <button type="button"
+            {% if holenum >= 18 %}
+                disabled
+            {% endif %}
+                class="btn btn-primary">
+            <span class="fas fa-plus fa-lg">
+            </span>
+        </button>
+        {% if holenum < 18 %}
+        </a>
+        {% endif %}
+        <a href="{{ url_for('games') }}" class="btn btn-primary" role="button">
+            <span class="fas fa-times fa-lg">
+            </span>
+        </a>
+    </div>
+</div>
+
+{% endblock %}
