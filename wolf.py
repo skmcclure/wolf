@@ -231,8 +231,8 @@ def score(gamenum, holenum):
     game = Game.query.filter_by(pkey=gamenum).first()
     hole = Hole.query.filter_by(game_fkey=gamenum, num=holenum).first()
     if game.carry_overs:
-        # FIXME - the hole needs to be calculated for rollover because the round
-        # FIXME - might not have started on 1 or 10.
+        # TODO - the hole needs to be calculated for rollover because the round
+        # TODO - might not have started on 1 or 10.
         last_hole = hole.get_lasthole()
         if not last_hole:
             last_hole = Hole.query.filter_by(game_fkey=gamenum, num=holenum-1).first()
@@ -246,15 +246,16 @@ def score(gamenum, holenum):
         players = game.players.split(',')
         wolf = players[(holenum - 1) % len(players)]
         if request.method == 'GET':
-            return render_template('enter_score.html', game = game,
-                                                       wolf = wolf,
-                                                       partner = None,
-                                                       players = players,
-                                                       scores = [],
-                                                       points = [],
-                                                       carry_over = carry_over,
-                                                       gamenum = gamenum,
-                                                       holenum = holenum)
+            return render_template('enter_score.html',
+                                   game=game,
+                                   wolf=wolf,
+                                   partner=None,
+                                   players=players,
+                                   scores=[],
+                                   points=[],
+                                   carry_over=carry_over,
+                                   gamenum=gamenum,
+                                   holenum=holenum)
         else:
             partner = request.form.get('partner', None)
             option = request.form.get('wolf_option', None)
@@ -268,14 +269,16 @@ def score(gamenum, holenum):
             if mode == PartnerType.NORMAL:
                 if not partner:
                     flash('You must pick a parter or set the wolf', 'error')
-                    return render_template('enter_score.html', game = game,
-                                           wolf = wolf,
-                                           partner = None,
-                                           players = players,
-                                           scores = [],
-                                           points = [],
-                                           gamenum = gamenum,
-                                           holenum = holenum)
+                    return render_template('enter_score.html',
+                                           game=game,
+                                           wolf=wolf,
+                                           partner=None,
+                                           players=players,
+                                           scores=[],
+                                           points=[],
+                                           gamenum=gamenum,
+                                           holenum=holenum
+                                          )
             else:
                 partner = None
 
@@ -325,15 +328,16 @@ def score(gamenum, holenum):
                 points.append(0)
 
     scores = eval(hole.scores)
-    return render_template('hole.html', wolf = hole.wolf,
-                                        partner = hole.partner,
-                                        players = players,
-                                        scores = scores,
-                                        points = points,
-                                        carry_over = hole.carry_over,
-                                        game = game,
-                                        gamenum = gamenum,
-                                        holenum = holenum)
+    return render_template('hole.html',
+                           wolf=hole.wolf,
+                           partner=hole.partner,
+                           players=players,
+                           scores=scores,
+                           points=points,
+                           carry_over=hole.carry_over,
+                           game=game,
+                           gamenum=gamenum,
+                           holenum=holenum)
 
 
 if __name__ == '__main__':
