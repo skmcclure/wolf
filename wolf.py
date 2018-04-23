@@ -338,8 +338,7 @@ def score(gamenum, holenum):
                            gamenum=gamenum,
                            holenum=holenum
                            )
-class NewClass:
-        pass
+
 
 if __name__ == '__main__':
     app.run(debug=settings.DEBUG, host='0.0.0.0', port=settings.PORT)
