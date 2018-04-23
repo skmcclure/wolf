@@ -278,7 +278,7 @@ def score(gamenum, holenum):
                                            points=[],
                                            gamenum=gamenum,
                                            holenum=holenum
-                                          )
+                                           )
             else:
                 partner = None
 
@@ -295,14 +295,14 @@ def score(gamenum, holenum):
                                        points=[],
                                        gamenum=gamenum,
                                        holenum=holenum,
-                                      )
+                                       )
             hole = Hole(game,
                         holenum,
                         wolf,
                         mode,
                         partner,
                         str(scores),
-                       )
+                        )
             db.session.add(hole)
             db.session.commit()
             flash('Saved score for hole #%d' % holenum)
@@ -311,7 +311,6 @@ def score(gamenum, holenum):
 
     game = Game.query.filter_by(pkey=gamenum).first()
     hole = Hole.query.filter_by(game_fkey=gamenum, num=holenum).first()
-    lasthole = hole.get_lasthole()
     players = game.players.split(',')
     if holenum == 0:
         points = [0, 0, 0, 0]
@@ -337,8 +336,10 @@ def score(gamenum, holenum):
                            carry_over=hole.carry_over,
                            game=game,
                            gamenum=gamenum,
-                           holenum=holenum)
-
+                           holenum=holenum
+                           )
+class NewClass:
+        pass
 
 if __name__ == '__main__':
     app.run(debug=settings.DEBUG, host='0.0.0.0', port=settings.PORT)
